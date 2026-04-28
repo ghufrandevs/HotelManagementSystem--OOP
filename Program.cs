@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Xml.Linq;
 
 namespace HotelManagementSystem__OOP
 {
@@ -10,15 +11,15 @@ namespace HotelManagementSystem__OOP
         {
             Console.WriteLine("Hello to Hotel Management System ");
             Console.WriteLine("Select the option :");
-            Console.WriteLine("1.Add a New Guest");
-            Console.WriteLine("2.Add a New Room");
+            Console.WriteLine("1.Add Guest");
+            Console.WriteLine("2.Add Room");
             Console.WriteLine("3.Book a Room");
             Console.WriteLine("4.Cancel a Booking");
             Console.WriteLine("5.Display All Available Rooms");
             Console.WriteLine("6.Display All Booked Rooms");
-            Console.WriteLine("7.Search for a Guest");
-            Console.WriteLine("8.Hotel Statistics Report");
-            Console.WriteLine("9.Exit");
+            Console.WriteLine("7.Search Guest by National ID");
+            Console.WriteLine("8.Show Hotel Statistics");
+            Console.WriteLine("0.Exit");
 
         }
         public static bool ExitSystem()
@@ -44,6 +45,7 @@ namespace HotelManagementSystem__OOP
         {
             int option = 0;
             bool exit = false;
+            Hotel hotel = new Hotel();
             while (!exit)
             {
                 ShowMenue();
@@ -53,11 +55,30 @@ namespace HotelManagementSystem__OOP
                 }
                 catch (FormatException)
                 {
-                    Console.WriteLine("Invalid input. Please choose a number from 1 to 9");
+                    Console.WriteLine("Invalid input. Please choose a number from 0 to 8");
                 }
                 switch(option)
                 {
                     case 1:
+                        Console.WriteLine("Enter the Name: ");
+                       string name=(Console.ReadLine()?? string.Empty).Trim();
+                        while (string.IsNullOrWhiteSpace(name))
+                        {
+                            Console.WriteLine("Name cannot be empty. Please re-enter:");
+                            name = (Console.ReadLine() ?? string.Empty).Trim();
+                        }
+
+                        Console.WriteLine("Enter national ID: ");
+                        string ID = (Console.ReadLine() ?? string.Empty).Trim();
+                        while (string.IsNullOrWhiteSpace(ID))
+                        {
+                            Console.WriteLine("ID cannot be empty. Please re-enter:");
+                            ID = (Console.ReadLine() ?? string.Empty).Trim();
+                        }
+
+
+                        hotel.AddGuest(name, ID);
+
                         break;
                         case 2:
                         break;
@@ -74,7 +95,7 @@ namespace HotelManagementSystem__OOP
                         case 8:
                         break;
 
-                        case 9:
+                        case 0:
                         exit = ExitSystem();
                         break;
                 }
@@ -124,6 +145,7 @@ namespace HotelManagementSystem__OOP
             }
             Rooms.Add(new Room(number, type));
             Console.WriteLine("Room added successfully");
+
         }
         public void DisplayBookedRooms()
         {
@@ -138,8 +160,84 @@ namespace HotelManagementSystem__OOP
 
         public void BookRoom(string nationalID, int roomNumber)
         {
+            Guest guest=FindGuest(nationalID);
+            if(guest == null)
+            {
+                Console.WriteLine("Guest not found");
+                return;
+            }
+            Room room = Rooms.Find(r => r.RoomNumber == roomNumber);
+                if (room==null)
+            {
+                Console.WriteLine("Room not found");
+                return; 
+            }
+                //book a room
+                if(room.Book()==true)
+            {
+                Console.WriteLine("Room is already booked");
+            }
+            Bookings.Add(new Booking(guest, room));
+            Console.WriteLine("Booking successful.");
 
         }
+
+        public void CancelBooking(int bookingID)
+        {
+           Booking book=Bookings.Find(b => b.BookingID == bookingID);
+            if(book==null)
+            {
+                Console.WriteLine("the Booking Id is not found");
+                return;
+            }
+            book.Room.CancelBooking();
+            Bookings.RemoveAll(b => b.BookingID == bookingID);
+            Console.WriteLine("Booking cancelled successfully.");
+        }
+        public void SearchGuestBookings(string nationalID)
+        {
+            Guest guest=FindGuest(nationalID);
+            if( guest==null)
+            {
+                Console.WriteLine("Guest not found");
+                return;
+            }
+            bool found=false;
+            foreach (var b in Bookings)
+            {
+                if(b.Guest.NationalID==nationalID)
+                {
+                    b.DisplayInfo();
+                    found=true;
+                }
+            }
+            if (!found)
+            {
+                Console.WriteLine("No bookings found for this guest.");
+            }
+        }
+        public void DisplayStatistics()
+        {
+            int totalGuest = Guests.Count;
+            int totalRoom = Rooms.Count;
+            int bookRoom = 0;
+            int availableRoom = 0;
+            foreach (var bRoom in Rooms )
+            {
+                if(bRoom.IsBooked==true)
+                {
+                    bookRoom++;
+                }
+            }
+            availableRoom = totalRoom - bookRoom;
+            int totalGuestsCreated = Guest.GetTotalGuestsCreated();
+            Console.WriteLine("totalGuest :" + totalGuest);
+            Console.WriteLine("totalRoom : " + totalRoom);
+            Console.WriteLine("bookRoom : " + bookRoom);
+            Console.WriteLine("availableRoom : " + availableRoom);
+
+        }
+
 
     }
     class Guest
