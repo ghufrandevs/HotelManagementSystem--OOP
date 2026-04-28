@@ -107,7 +107,7 @@
         }
         public Guest(string name, string id)
         {
-            fullName=name;
+             FullName=name;
             nationalID = id;
             totalGuestsCreated++;
         }
@@ -123,10 +123,92 @@
     }
     class Room
     {
+        private int roomNumber;
+        private string roomType;
+        private bool isBooked;
 
+        public int RoomNumber
+        {
+            get { return roomNumber; }
+        }
+        public string RoomType
+        {
+            get { return roomType; } 
+        }
+        public bool IsBooked
+        {
+            get { return isBooked; } 
+        }
+        public Room(int number, string type)
+        {
+            roomNumber = number;
+            roomType = type;
+            isBooked = false ;
+
+        }
+        public bool Book()
+        {
+            if(isBooked==true)
+            {
+                //already booked
+                return false;
+
+            }
+               //booking successful
+               isBooked=true;
+                return true;                
+        }
+        public void CancelBooking()
+        {
+            //available 
+            isBooked=false;
+        }
+        public void DisplayInfo()
+        {
+            //Prints room number, type, and availability status.
+            Console.WriteLine("Room number : " + RoomNumber); 
+            Console.WriteLine("Room Type : " + RoomType);
+            // if (IsBooked == true) → "No"
+            // else → "Yes"
+            Console.WriteLine("Available: " + (IsBooked ? "No" : "Yes"));
+        }
     }
     class Booking
     {
+        private static int nextBookingID=1001;
+        private int bookingID;
+        private Guest guest;
+        private Room room;
 
+        public int BookingID
+        {
+            get { return bookingID; } 
+        }
+        public Guest Guest
+        {
+            get { return guest; } 
+        }
+        
+        public Room Room
+        {
+            get { return room; } 
+        }
+        public Booking(Guest guest, Room room)
+        {
+            bookingID = nextBookingID;
+            nextBookingID++;
+            this.guest = guest;
+            this.room = room;     
+           
+        }
+
+        public void DisplayInfo()
+        {
+            //Prints the booking ID, guest name, room number, and room type.
+            Console.WriteLine("booking ID:" + BookingID);
+            Console.WriteLine("guest name:" + Guest.FullName);
+            Console.WriteLine("room number:" + Room.RoomNumber);
+            Console.WriteLine("room type:" +Room.RoomType);
+        }
     }
 }
