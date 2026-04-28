@@ -1,4 +1,6 @@
-﻿namespace HotelManagementSystem__OOP
+﻿using System.Runtime.CompilerServices;
+
+namespace HotelManagementSystem__OOP
 {
     
     
@@ -84,6 +86,61 @@
         static List<Guest> Guests=new List<Guest>();
         static List<Room> Rooms=new List<Room>();
         static List<Booking> Bookings=new List<Booking>();
+        public string HotelName
+        {
+            get { return HotelName; }
+        }
+        public void AddGuest(string name, string id)
+        {
+            foreach(var g in Guests)
+            {
+                if(g.NationalID==id)
+                {
+                    Console.WriteLine("Guest with this ID already exists");
+                    return;
+                }
+            }
+            Guests.Add(new Guest(name, id));
+            Console.WriteLine("Guest added successfully.");
+        }
+        public Guest FindGuest(string nationalID)
+        {
+           Guest result=Guests.Find((g => g.NationalID == nationalID));
+            if(result!=null)
+            {
+                return result;
+            }
+            return null;
+        }
+        public void AddRoom(int number, string type)
+        {
+            foreach (var r in Rooms)
+            {
+                if(r.RoomNumber==number)
+                {
+                    Console.WriteLine("Room with this number already exists");
+                    return;
+                }
+            }
+            Rooms.Add(new Room(number, type));
+            Console.WriteLine("Room added successfully");
+        }
+        public void DisplayBookedRooms()
+        {
+            foreach(var R  in Rooms)
+            {
+                if(R.IsBooked==false )
+                {
+                    R.DisplayInfo();
+                }
+            }
+        }
+
+        public void BookRoom(string nationalID, int roomNumber)
+        {
+
+        }
+
     }
     class Guest
     {
