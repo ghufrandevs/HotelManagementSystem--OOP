@@ -22,6 +22,100 @@ namespace HotelManagementSystem__OOP
             Console.WriteLine("0.Exit");
 
         }
+        public static void AddGuest(Hotel hotel)
+        {
+            Console.WriteLine("Enter the Name: ");
+            string name = (Console.ReadLine() ?? string.Empty).Trim();
+            while (string.IsNullOrWhiteSpace(name))
+            {
+                Console.WriteLine("Name cannot be empty. Please re-enter:");
+                name = (Console.ReadLine() ?? string.Empty).Trim();
+            }
+
+            Console.WriteLine("Enter national ID: ");
+            string ID = (Console.ReadLine() ?? string.Empty).Trim();
+            while (string.IsNullOrWhiteSpace(ID))
+            {
+                Console.WriteLine("ID cannot be empty. Please re-enter:");
+                ID = (Console.ReadLine() ?? string.Empty).Trim();
+            }
+            hotel.AddGuest(name, ID);
+
+        }
+        public static void AddRoom(Hotel hotel)
+        {
+            Console.WriteLine("Enter Room number :");
+            int roomNumber;
+            while (!int.TryParse(Console.ReadLine(), out roomNumber))
+            {
+                Console.WriteLine("Invalid input. Please enter a valid number:");
+            }
+            Console.WriteLine("Enter room type:");
+            string type = (Console.ReadLine() ?? string.Empty).Trim();
+
+            while (string.IsNullOrWhiteSpace(type))
+            {
+                Console.WriteLine("Room type cannot be empty. Please re-enter:");
+                type = (Console.ReadLine() ?? string.Empty).Trim();
+            }
+            hotel.AddRoom(roomNumber, type);
+        }
+        public static void BookRoom(Hotel hotel)
+        {
+            Console.WriteLine("Enter national Id :");
+            string nationalID = (Console.ReadLine() ?? string.Empty).Trim();
+
+            while (string.IsNullOrWhiteSpace(nationalID))
+            {
+                Console.WriteLine("Room type cannot be empty. Please re-enter:");
+                nationalID = (Console.ReadLine() ?? string.Empty).Trim();
+            }
+
+            Console.WriteLine("Enter Room number :");
+            int RoomNumber;
+            while (!int.TryParse(Console.ReadLine(), out RoomNumber))
+            {
+                Console.WriteLine("Invalid number. Please enter a valid room number:");
+            }
+            hotel.BookRoom(nationalID, RoomNumber);
+        }
+        public static void CancelBooking(Hotel hotel)
+        {
+            Console.WriteLine("Enter Booking Id ");
+            int bookingId;
+            while (!int.TryParse(Console.ReadLine(), out bookingId))
+            {
+                Console.WriteLine("Invalid number. Please enter a valid booking id :");
+            }
+            hotel.CancelBooking(bookingId) ;
+        }
+        public static void DisplayAvailableRooms(Hotel hotel)
+        {
+            hotel.DisplayAvailableRooms() ;
+        }
+        public static void DisplayBookedRooms(Hotel hotel)
+        {
+            hotel.DisplayBookedRooms() ;
+        }
+        public static void SearchGuestID(Hotel hotel)
+        {
+            Console.WriteLine("Enter national ID:");
+
+            string id = (Console.ReadLine() ?? string.Empty).Trim();
+
+            while (string.IsNullOrWhiteSpace(id))
+            {
+                Console.WriteLine("ID cannot be empty. Please re-enter:");
+                id = (Console.ReadLine() ?? string.Empty).Trim();
+            }
+
+            hotel.SearchGuestBookings(id);
+        }
+        public static void ShowHotelStatistics(Hotel hotel)
+        {
+            hotel.DisplayStatistics() ;
+        }
+
         public static bool ExitSystem()
         {
             Console.WriteLine("Are you sure you want to exit the system? (yes/no)");
@@ -60,44 +154,45 @@ namespace HotelManagementSystem__OOP
                 switch(option)
                 {
                     case 1:
-                        Console.WriteLine("Enter the Name: ");
-                       string name=(Console.ReadLine()?? string.Empty).Trim();
-                        while (string.IsNullOrWhiteSpace(name))
-                        {
-                            Console.WriteLine("Name cannot be empty. Please re-enter:");
-                            name = (Console.ReadLine() ?? string.Empty).Trim();
-                        }
-
-                        Console.WriteLine("Enter national ID: ");
-                        string ID = (Console.ReadLine() ?? string.Empty).Trim();
-                        while (string.IsNullOrWhiteSpace(ID))
-                        {
-                            Console.WriteLine("ID cannot be empty. Please re-enter:");
-                            ID = (Console.ReadLine() ?? string.Empty).Trim();
-                        }
-
-
-                        hotel.AddGuest(name, ID);
-
+                        AddGuest(hotel);
                         break;
+
                         case 2:
+                        AddRoom(hotel);
                         break;
+
                         case 3:
+                        BookRoom(hotel);
                         break;
+
                         case 4:
+                        CancelBooking(hotel);
                         break;
+
                         case 5:
+                        DisplayAvailableRooms(hotel);
                         break;
+
                         case 6:
+                        DisplayBookedRooms(hotel);
                         break;
+
                         case 7:
+                        SearchGuestID(hotel);
                         break;
+
                         case 8:
+                        ShowHotelStatistics(hotel);
                         break;
 
                         case 0:
                         exit = ExitSystem();
                         break;
+                }
+                if (!exit)
+                {
+                    Console.ReadLine();
+                    Console.Clear();
                 }
             }
         }
@@ -146,6 +241,16 @@ namespace HotelManagementSystem__OOP
             Rooms.Add(new Room(number, type));
             Console.WriteLine("Room added successfully");
 
+        }
+        public void DisplayAvailableRooms()
+        {
+            foreach (var R in Rooms)
+            {
+                if (R.IsBooked == true)
+                {
+                    R.DisplayInfo();
+                }
+            }
         }
         public void DisplayBookedRooms()
         {
