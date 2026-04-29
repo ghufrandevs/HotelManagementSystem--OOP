@@ -67,7 +67,7 @@ namespace HotelManagementSystem__OOP
 
             while (string.IsNullOrWhiteSpace(nationalID))
             {
-                Console.WriteLine("Room type cannot be empty. Please re-enter:");
+                Console.WriteLine("ID cannot be empty. Please re-enter:");
                 nationalID = (Console.ReadLine() ?? string.Empty).Trim();
             }
 
@@ -150,6 +150,7 @@ namespace HotelManagementSystem__OOP
                 catch (FormatException)
                 {
                     Console.WriteLine("Invalid input. Please choose a number from 0 to 8");
+                    continue;
                 }
                 switch(option)
                 {
@@ -202,9 +203,10 @@ namespace HotelManagementSystem__OOP
         static List<Guest> Guests=new List<Guest>();
         static List<Room> Rooms=new List<Room>();
         static List<Booking> Bookings=new List<Booking>();
+        private string hotelName;
         public string HotelName
         {
-            get { return HotelName; }
+            get { return hotelName; }
         }
         public void AddGuest(string name, string id)
         {
@@ -244,22 +246,38 @@ namespace HotelManagementSystem__OOP
         }
         public void DisplayAvailableRooms()
         {
+            bool found = false;
             foreach (var R in Rooms)
             {
-                if (R.IsBooked == true)
+                if (!R.IsBooked )
                 {
                     R.DisplayInfo();
+                    Console.WriteLine("-----------------------------------------------------");
+                    found = true;
                 }
+            }
+            if(!found)
+            {
+                Console.WriteLine("No available rooms.");
+
             }
         }
         public void DisplayBookedRooms()
         {
+            bool found = false;
             foreach(var R  in Rooms)
             {
-                if(R.IsBooked==false )
+                if(R.IsBooked )
                 {
                     R.DisplayInfo();
+                    Console.WriteLine("---------------------------------------------------");
+                    found = true;
                 }
+            }
+            if(!found)
+            {
+                Console.WriteLine("No booked rooms available.");
+
             }
         }
 
@@ -278,15 +296,16 @@ namespace HotelManagementSystem__OOP
                 return; 
             }
                 //book a room
-                if(room.Book()==true)
+                if(!room.Book())
             {
                 Console.WriteLine("Room is already booked");
+                return;
             }
             Bookings.Add(new Booking(guest, room));
             Console.WriteLine("Booking successful.");
 
         }
-
+        
         public void CancelBooking(int bookingID)
         {
            Booking book=Bookings.Find(b => b.BookingID == bookingID);
