@@ -217,8 +217,16 @@ namespace HotelManagementSystem__OOP
                     Console.WriteLine("Guest with this ID already exists");
                     return;
                 }
+                
             }
-            Guests.Add(new Guest(name, id));
+            //  create new guest
+            Guest newGuest=new Guest(name,id);
+            if(newGuest.FullName==null)
+            {
+                return;
+            }
+            //add to list
+            Guests.Add(newGuest);
             Console.WriteLine("Guest added successfully.");
         }
         public Guest FindGuest(string nationalID)
@@ -378,10 +386,12 @@ namespace HotelManagementSystem__OOP
             get { return fullName; } 
             set
             {
-                if(!string.IsNullOrEmpty(value))
+                if(string.IsNullOrWhiteSpace(value) || value.Trim().Length < 3);
                 {
-                    fullName = value;
+                    Console.WriteLine("Name must be at least 3 chars ");
+                    return;
                 }
+                fullName = value;
             }
         }
         public Guest(string name, string id)
