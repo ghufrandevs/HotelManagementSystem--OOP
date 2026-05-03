@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Xml.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HotelManagementSystem__OOP
 {
@@ -58,7 +59,14 @@ namespace HotelManagementSystem__OOP
                 Console.WriteLine("Room type cannot be empty. Please re-enter:");
                 type = (Console.ReadLine() ?? string.Empty).Trim();
             }
-            hotel.AddRoom(roomNumber, type);
+
+            Console.WriteLine("Enter nightly rate:");
+            decimal rate;
+            while (!decimal.TryParse(Console.ReadLine(), out rate) || rate <= 0)
+            {
+                Console.WriteLine("Invalid rate. Try again");
+            }
+            hotel.AddRoom(roomNumber, type,rate );
         }
         public static void BookRoom(Hotel hotel)
         {
@@ -77,7 +85,15 @@ namespace HotelManagementSystem__OOP
             {
                 Console.WriteLine("Invalid number. Please enter a valid room number:");
             }
-            hotel.BookRoom(nationalID, RoomNumber);
+
+            Console.WriteLine("Enter number of nights: ");
+            int nights;
+            while(!int.TryParse(Console.ReadLine(), out nights) || nights <= 0)
+{
+                Console.WriteLine("Invalid nights. Enter a positive number:");
+            }
+
+            hotel.BookRoom(nationalID, RoomNumber,nights);
         }
         public static void CancelBooking(Hotel hotel)
         {
@@ -204,6 +220,25 @@ namespace HotelManagementSystem__OOP
         static List<Room> Rooms=new List<Room>();
         static List<Booking> Bookings=new List<Booking>();
         private string hotelName;
+        private bool IsValidType(string type)
+        {
+            if (string.IsNullOrWhiteSpace(type))
+            {
+                return false;
+            }
+
+            string t = type.Trim().ToLower();
+
+            return t == "standard" || t == "deluxe" || t == "suite";
+        }
+        private string NormalizeType(string type)
+        {
+            string t=type.Trim().ToLower();
+            if(t== "standard") return "Standard";
+            if (t == "deluxe") return "Deluxe";
+            if (t == "suite") return "Suite";
+            return type;
+        }
         public string HotelName
         {
             get { return hotelName; }
@@ -238,7 +273,7 @@ namespace HotelManagementSystem__OOP
             }
             return null;
         }
-        public void AddRoom(int number, string type)
+        public void AddRoom(int number, string type,decimal rate)
         {
             foreach (var r in Rooms)
             {
@@ -248,7 +283,14 @@ namespace HotelManagementSystem__OOP
                     return;
                 }
             }
-            Rooms.Add(new Room(number, type));
+            if(!IsValidType(type))
+            {
+                Console.WriteLine("Invalid room type. Allowed: Standard, Deluxe, Suite.");
+                return;
+            }
+            string normalizedType = NormalizeType(type);
+
+            Rooms.Add(new Room(number, normalizedType, rate));
             Console.WriteLine("Room added successfully");
 
         }
@@ -289,7 +331,7 @@ namespace HotelManagementSystem__OOP
             }
         }
 
-        public void BookRoom(string nationalID, int roomNumber)
+        public void BookRoom(string nationalID, int roomNumber,int nights)
         {
             Guest guest=FindGuest(nationalID);
             if(guest == null)
@@ -309,7 +351,7 @@ namespace HotelManagementSystem__OOP
                 Console.WriteLine("Room is already booked");
                 return;
             }
-            Bookings.Add(new Booking(guest, room));
+            Bookings.Add(new Booking(guest, room,nights));
             Console.WriteLine("Booking successful.");
 
         }
@@ -386,7 +428,7 @@ namespace HotelManagementSystem__OOP
             get { return fullName; } 
             set
             {
-                if(string.IsNullOrWhiteSpace(value) || value.Trim().Length < 3);
+                if(string.IsNullOrWhiteSpace(value) || value.Trim().Length < 3)
                 {
                     Console.WriteLine("Name must be at least 3 chars ");
                     return;
@@ -415,6 +457,7 @@ namespace HotelManagementSystem__OOP
         private int roomNumber;
         private string roomType;
         private bool isBooked;
+        private decimal nightlRate;
 
         public int RoomNumber
         {
@@ -428,11 +471,16 @@ namespace HotelManagementSystem__OOP
         {
             get { return isBooked; } 
         }
-        public Room(int number, string type)
+        public decimal NightlRate
+        {
+            get { return nightlRate; }
+        }
+        public Room(int number, string type, decimal rate)
         {
             roomNumber = number;
             roomType = type;
             isBooked = false ;
+            nightlRate = rate;
 
         }
         public bool Book()
@@ -468,11 +516,17 @@ namespace HotelManagementSystem__OOP
         private int bookingID;
         private Guest guest;
         private Room room;
+        private int nights;
+        private decimal totalCost;
 
         public int BookingID
         {
             get { return bookingID; } 
         }
+        public int Nights
+        { get { return nights; } }
+        public decimal TotalCost
+            { get { return totalCost; } }
         public Guest Guest
         {
             get { return guest; } 
@@ -482,12 +536,14 @@ namespace HotelManagementSystem__OOP
         {
             get { return room; } 
         }
-        public Booking(Guest guest, Room room)
+        public Booking(Guest guest, Room room,int nights)
         {
             bookingID = nextBookingID;
             nextBookingID++;
             this.guest = guest;
-            this.room = room;     
+            this.room = room;    
+            this.nights = nights;
+            totalCost = room.NightlRate * nights;
            
         }
 
@@ -498,6 +554,8 @@ namespace HotelManagementSystem__OOP
             Console.WriteLine("guest name:" + Guest.FullName);
             Console.WriteLine("room number:" + Room.RoomNumber);
             Console.WriteLine("room type:" +Room.RoomType);
+            Console.WriteLine("Nights: " + Nights);
+            Console.WriteLine("Total Cost: " + TotalCost);
         }
     }
 }
